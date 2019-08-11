@@ -20,7 +20,7 @@ public class App
                 .setMaster("spark://192.168.10.14:7077");
         JavaSparkContext sc = new JavaSparkContext(conf);
         
-        JavaRDD<String> lines = sc.textFile("hdfs://192.168.10.14:9000/pagelinks-sql/pagelinks.xml")
+        JavaRDD<String> lines = sc.textFile("/home/hdfs/frwiki-latest-pagelinks.sql")
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
         JavaRDD<HashMap> values = lines.map(s -> getValues(s));
