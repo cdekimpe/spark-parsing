@@ -21,16 +21,41 @@ public class App
         JavaSparkContext sc = new JavaSparkContext(conf);
         
         JavaRDD<String> lines = sc.textFile("hdfs://192.168.10.14:9000/pagelinks-sql/pagelinks.sql");
-        lines = lines.filter(s -> s.startsWith("INSERT INTO"));
-        //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));
+        lines = lines.filter(s -> s.startsWith("INSERT INTO")); // Select lines that start only with 'INSERT INTO'
+        lines = lines.filter(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+        JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));
+        values.collect();
         
-        //JavaRDD<String> words = textFile.flatMap(LineIterator::new);
-        
+        System.out.println(values);
         
         System.out.println("Hello World!");
     }
     
-    private static List<HashMap<Integer, String>> getValues(String s) {
+    private static HashMap<Integer, String> getValues(String s) {
         
+        // Exceptions :
+        // (936086,0,'\'Midst_Woodland_Shadows',0)
+        // (11899918,0,'(1)_Cérès',0)
+        
+        int i = 0;
+        int pl_from = 0;
+        String temp;
+        String pl_title;
+        String[] comp = s.split(",");
+        int totalCount = comp.length;
+        HashMap<Integer,String> result = new HashMap<>();
+        for (int u = 0; u < totalCount; u = u+2) {
+            if (u%4 == 0) {
+                temp = comp[u].substring(1);
+                pl_from = Integer.parseInt(temp);
+            } else if (u%4 == 2) {
+                pl_title = comp[u].substring(1, comp[u].length() -1);
+                result.put(pl_from, pl_title);
+            }
+            if (u >= 100)
+                break;
+        }
+        
+        return result;
     }
 }
