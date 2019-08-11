@@ -29,7 +29,8 @@ public class App
         JavaRDD<HashMap> values = lines.map(s -> getValues(s));
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
         
-        HashMap<Integer, String> values = getValues(App.test);
+        String test = App.test.substring(31);
+        HashMap<Integer, String> values = getValues(test);
         
         System.out.println(values);
         
