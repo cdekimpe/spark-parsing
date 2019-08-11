@@ -20,10 +20,11 @@ public class App
                 .setMaster("spark://192.168.10.14:7077");
         JavaSparkContext sc = new JavaSparkContext(conf);
         
-        JavaRDD<String> lines = sc.textFile("hdfs://192.168.10.14:9000/pagelinks-sql/pagelinks.sql");
-        lines = lines.filter(s -> s.startsWith("INSERT INTO")); // Select lines that start only with 'INSERT INTO'
-        lines = lines.filter(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
-        JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));
+        JavaRDD<String> lines = sc.textFile("hdfs://192.168.10.14:9000/pagelinks-sql/pagelinks.sql")
+                .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
+                .map(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+        JavaRDD<HashMap> values = lines.map(s -> getValues(s));
+        //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));
         values.collect();
         
         System.out.println(values);
