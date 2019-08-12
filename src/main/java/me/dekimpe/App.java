@@ -23,7 +23,9 @@ public class App
                 .setMaster("spark://192.168.10.14:7077");
         JavaSparkContext sc = new JavaSparkContext(conf);
         
-        JavaRDD<String> lines = sc.textFile(args[0])
+        //sc.textFile("hdfs://192.168.10.14:9000/spark/test-sql.txt").filter(lambda x: "INSERT INTO " in x).map(lambda x: (x.rstrip(';').lstrip('INSERT INTO pagelinks VALUES '))).map(lambda x: x[1:-1]).flatMap(lambda x: x.split('),(')).map(lambda x: (x.split(",")[0], x.split(",")[2])).toDF(['page_id', 'page_title']).write.format("com.databricks.spark.avro").save("hdfs://192.168.10.14:9000/temp/pagelinks_avro")
+        
+        /*JavaRDD<String> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
         List<String> result = lines.collect();
