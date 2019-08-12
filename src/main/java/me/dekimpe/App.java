@@ -26,6 +26,7 @@ public class App
         JavaRDD<String> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+        lines.collect();
         //JavaRDD<HashMap> values = lines.map(s -> getValues(s));
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
         
