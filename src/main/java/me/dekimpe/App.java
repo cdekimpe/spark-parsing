@@ -53,8 +53,6 @@ public class App
         HashMap<Integer, String> values = getValues(test);
         
         System.out.println(values);
-        
-        System.out.println("Hello World!");
     }
     
     private static HashMap<Integer, String> getValues(String s) {
