@@ -6,6 +6,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
 
 /**
  * Hello world!
@@ -19,10 +20,18 @@ public class App
     public static void main(String[] args)
     {
         SparkConf conf = new SparkConf()
+                .set("spark.executor.extraClassPath", "/home/hadoop/*:")
                 .setAppName("Spark Parsing")
                 .setMaster("spark://192.168.10.14:7077");
         JavaSparkContext sc = new JavaSparkContext(conf);
         
+        SparkSession spark = SparkSession
+                .builder()
+                .appName("Spark Parsing")
+                .master("spark://192.168.10.14:7077")
+                //.config("spark.some.config.option", "some-value")
+                .getOrCreate();
+
         JavaRDD<String> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
@@ -35,7 +44,7 @@ public class App
                 .format("com.databricks.spark.avro")
                 .save("/output");*/
                        
-        lines.collect().forEach(s -> System.out.println(s.substring(0, 100)));
+        lines.collect().forEach(s -> System.out.println(getValues(s)));
         
         //JavaRDD<HashMap> values = lines.map(s -> getValues(s));
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
