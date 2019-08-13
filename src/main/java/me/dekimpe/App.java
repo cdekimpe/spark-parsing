@@ -1,7 +1,11 @@
 package me.dekimpe;
 
+import me.dekimpe.types.PageLink;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.avro.Schema;
+import org.apache.avro.SchemaBuilder;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -21,20 +25,30 @@ public class App
     {
         SparkConf conf = new SparkConf()
                 .set("spark.executor.extraClassPath", "/home/hadoop/*:")
-                .setAppName("Spark Parsing")
+                .setAppName("Spark Parsing - Context")
                 .setMaster("spark://192.168.10.14:7077");
         JavaSparkContext sc = new JavaSparkContext(conf);
         
         SparkSession spark = SparkSession
                 .builder()
-                .appName("Spark Parsing")
+                .appName("Spark Parsing - Session")
                 .master("spark://192.168.10.14:7077")
                 //.config("spark.some.config.option", "some-value")
                 .getOrCreate();
 
-        JavaRDD<String> lines = sc.textFile(args[0])
+        JavaRDD<List<PageLink>> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
-                .map(s -> s.substring(31)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+                .map(s -> s.substring(31))
+                .map(s -> getValues(s)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+        
+        Schema pageLinks = SchemaBuilder.record("PageLinks")
+                .namespace("me.dekimpe.avro")
+                .fields().requiredInt("pl_id").requiredString("pl_title")
+                .endRecord();
+        
+        List<String> rows = lines.collect().forEach(s -> getValues(s));
+        
+        spark.createDataFrame(lines, PageLink.class);
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
         // Apply a schema to an RDD
@@ -44,7 +58,7 @@ public class App
                 .format("com.databricks.spark.avro")
                 .save("/output");*/
                        
-        lines.collect().forEach(s -> System.out.println(getValues(s)));
+        
         
         //JavaRDD<HashMap> values = lines.map(s -> getValues(s));
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
@@ -55,7 +69,7 @@ public class App
         System.out.println(values);
     }
     
-    private static HashMap<Integer, String> getValues(String s) {
+    private static List<PageLink> getValues(String s) {
         
         // Exceptions :
         // (936086,0,'\'Midst_Woodland_Shadows',0)
@@ -67,14 +81,14 @@ public class App
         String pl_title;
         String[] comp = s.split(",");
         int totalCount = comp.length;
-        HashMap<Integer,String> result = new HashMap<>();
+        List<PageLink> result = new ArrayList<>();
         for (int u = 0; u < totalCount; u = u+2) {
             if (u%4 == 0) {
                 temp = comp[u].substring(1);
                 pl_from = Integer.parseInt(temp);
             } else if (u%4 == 2) {
                 pl_title = comp[u].substring(1, comp[u].length() -1);
-                result.put(pl_from, pl_title);
+                result.add(new PageLink(pl_from, pl_title));
             }
             if (u >= 100)
                 break;
