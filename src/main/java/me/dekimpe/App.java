@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -38,17 +37,16 @@ public class App
 
         JavaRDD<List<PageLink>> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
-                .map(s -> s.substring(31))
-                .map(s -> getValues(s)); // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+                .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+                .map(s -> getValues(s)); // 
         
         Schema pageLinks = SchemaBuilder.record("PageLinks")
                 .namespace("me.dekimpe.avro")
                 .fields().requiredInt("pl_id").requiredString("pl_title")
                 .endRecord();
         
-        List<String> rows = lines.collect().forEach(s -> getValues(s));
-        
-        spark.createDataFrame(lines, PageLink.class);
+        DataFrame df = spark.createDataFrame(lines, PageLink.class);
+        df.show();
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
         // Apply a schema to an RDD
@@ -64,8 +62,7 @@ public class App
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
         
         String test = App.test.substring(31);
-        HashMap<Integer, String> values = getValues(test);
-        
+
         System.out.println(values);
     }
     
@@ -76,19 +73,17 @@ public class App
         // (11899918,0,'(1)_Cérès',0)
         
         int i = 0;
-        int pl_from = 0;
-        String temp;
-        String pl_title;
         String[] comp = s.split(",");
         int totalCount = comp.length;
         List<PageLink> result = new ArrayList<>();
+        PageLink pageLink;
         for (int u = 0; u < totalCount; u = u+2) {
+            pageLink = new PageLink();
             if (u%4 == 0) {
-                temp = comp[u].substring(1);
-                pl_from = Integer.parseInt(temp);
+                pageLink.setId(Integer.parseInt(comp[u].substring(1)));
             } else if (u%4 == 2) {
-                pl_title = comp[u].substring(1, comp[u].length() -1);
-                result.add(new PageLink(pl_from, pl_title));
+                pageLink.setTitle(comp[u].substring(1, comp[u].length() - 1));
+                result.add(pageLink);
             }
             if (u >= 100)
                 break;
