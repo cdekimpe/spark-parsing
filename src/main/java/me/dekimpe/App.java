@@ -10,6 +10,8 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
 /**
  * Hello world!
@@ -45,7 +47,7 @@ public class App
                 .fields().requiredInt("pl_id").requiredString("pl_title")
                 .endRecord();
         
-        DataFrame df = spark.createDataFrame(lines, PageLink.class);
+        Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
         df.show();
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
@@ -60,10 +62,6 @@ public class App
         
         //JavaRDD<HashMap> values = lines.map(s -> getValues(s));
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
-        
-        String test = App.test.substring(31);
-
-        System.out.println(values);
     }
     
     private static List<PageLink> getValues(String s) {
