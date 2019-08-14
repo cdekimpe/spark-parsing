@@ -42,13 +42,15 @@ public class App
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
                 .map(s -> getValues(s)); // 
         
-        Schema pageLinks = SchemaBuilder.record("PageLinks")
+        lines.take(100).forEach(s -> System.out.println(s));
+        
+        /*Schema pageLinks = SchemaBuilder.record("PageLinks")
                 .namespace("me.dekimpe.avro")
                 .fields().requiredInt("pl_id").requiredString("pl_title")
                 .endRecord();
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
-        df.show();
+        df.limit(100).show();
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
         // Apply a schema to an RDD
