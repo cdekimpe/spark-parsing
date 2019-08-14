@@ -77,14 +77,14 @@ public class App
         int totalCount = comp.length;
         List<PageLink> result = new ArrayList<>();
         PageLink pageLink;
+        pageLink = new PageLink();
         for (int u = 0; u < totalCount; u = u+2) {
-            pageLink = new PageLink();
-            if (u%4 == 1) {
-                System.out.println(comp[u].substring(1));
+            if (u%4 == 0) {
                 pageLink.setId(Integer.parseInt(comp[u].substring(1)));
             } else if (u%4 == 2) {
                 pageLink.setTitle(comp[u].substring(1, comp[u].length() - 1));
                 result.add(pageLink);
+                pageLink = new PageLink();
             }
             if (u >= 100)
                 break;
