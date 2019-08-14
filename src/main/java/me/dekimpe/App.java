@@ -79,7 +79,7 @@ public class App
         PageLink pageLink;
         for (int u = 0; u < totalCount; u = u+2) {
             pageLink = new PageLink();
-            if (u%4 == 0) {
+            if (u%4 == 1) {
                 System.out.println(comp[u].substring(1));
                 pageLink.setId(Integer.parseInt(comp[u].substring(1)));
             } else if (u%4 == 2) {
