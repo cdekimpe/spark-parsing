@@ -81,7 +81,6 @@ public class App
             pageLink = new PageLink();
             if (u%4 == 0) {
                 System.out.println(comp[u].substring(1));
-                
                 pageLink.setId(Integer.parseInt(comp[u].substring(1)));
             } else if (u%4 == 2) {
                 pageLink.setTitle(comp[u].substring(1, comp[u].length() - 1));
@@ -90,7 +89,7 @@ public class App
             if (u >= 100)
                 break;
         }
-        System.exit(0);
+
         return result;
     }
     
