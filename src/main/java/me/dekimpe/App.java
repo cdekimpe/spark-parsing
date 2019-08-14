@@ -36,20 +36,20 @@ public class App
                 //.config("spark.some.config.option", "some-value")
                 .getOrCreate();
 
-        JavaRDD<List<PageLink>> lines = sc.textFile(args[0])
+        JavaRDD<PageLink> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
                 .map(s -> getValues(s)); // 
         
-        lines.take(100).forEach(s -> System.out.println(s));
+        lines.take(1).forEach(s -> System.out.println(s));
         
         
         /*Schema pageLinks = SchemaBuilder.record("PageLinks")
                 .namespace("me.dekimpe.avro")
                 .fields().requiredInt("pl_id").requiredString("pl_title")
-                .endRecord();
+                .endRecord();*/
         
-        Dataset<Row> df = spark.createDataFrame(lines, pageLinks);
+        Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
         df.limit(100).show();
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
@@ -66,7 +66,7 @@ public class App
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
     }
     
-    private static List<PageLink> getValues(String s) {
+    private static PageLink getValues(String s) {
         
         // Exceptions :
         // (936086,0,'\'Midst_Woodland_Shadows',0)
@@ -83,14 +83,16 @@ public class App
                 pageLink.setId(Integer.parseInt(comp[u].substring(1)));
             } else if (u%4 == 2) {
                 pageLink.setTitle(comp[u].substring(1, comp[u].length() - 1));
-                result.add(pageLink);
-                pageLink = new PageLink();
+                break;
+                //result.add(pageLink);
+                //pageLink = new PageLink();
             }
             if (u >= 100)
                 break;
         }
 
-        return result;
+        return pageLink;
+        //return result;
     }
     
 }
