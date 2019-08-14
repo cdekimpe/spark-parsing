@@ -14,11 +14,6 @@ public class PageLink implements Serializable {
     
     private int pl_id;
     private String pl_title;
-    
-    public PageLink(int id, String title) {
-        pl_id = id;
-        pl_title = title;
-    }
 
     public int getId() {
         return pl_id;
