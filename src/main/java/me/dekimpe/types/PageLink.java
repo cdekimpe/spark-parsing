@@ -31,4 +31,8 @@ public class PageLink implements Serializable {
         this.pl_title = pl_title;
     }
     
+    public String toString() {
+        return "Pagelink : {'pl_id': " + this.pl_id + ", 'pl_title': '" + this.pl_title + "'}";
+    }
+    
 }
