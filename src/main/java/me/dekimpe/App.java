@@ -2,7 +2,9 @@ package me.dekimpe;
 
 import me.dekimpe.types.PageLink;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.spark.SparkConf;
@@ -11,6 +13,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import static org.apache.spark.sql.catalyst.expressions.LambdaFunction.identity;
 
 /**
  * Hello world!
@@ -36,14 +39,16 @@ public class App
                 //.config("spark.some.config.option", "some-value")
                 .getOrCreate();
 
-        JavaRDD<PageLink> lines = sc.textFile(args[0])
+        JavaRDD<List<PageLink>> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
-                .map(s -> getValues(s)); // 
+                .map(s -> getValues(s));
         
-        lines.take(1).forEach(s -> System.out.println(s));
+        JavaRDD<PageLink> pageLinks = lines.flatMap(s -> s.toArray(PageLink.class));
         
-        
+        lines.take(100).forEach(s -> System.out.println(s));
+         
+       
         /*Schema pageLinks = SchemaBuilder.record("PageLinks")
                 .namespace("me.dekimpe.avro")
                 .fields().requiredInt("pl_id").requiredString("pl_title")
@@ -66,7 +71,7 @@ public class App
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
     }
     
-    private static PageLink getValues(String s) {
+    private static List<PageLink> getValues(String s) {
         
         // Exceptions :
         // (936086,0,'\'Midst_Woodland_Shadows',0)
@@ -83,16 +88,14 @@ public class App
                 pageLink.setId(Integer.parseInt(comp[u].substring(1)));
             } else if (u%4 == 2) {
                 pageLink.setTitle(comp[u].substring(1, comp[u].length() - 1));
-                break;
-                //result.add(pageLink);
-                //pageLink = new PageLink();
+                result.add(pageLink);
+                pageLink = new PageLink();
             }
             if (u >= 100)
                 break;
         }
 
-        return pageLink;
-        //return result;
+        return result;
     }
     
 }
