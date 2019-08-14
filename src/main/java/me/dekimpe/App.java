@@ -2,7 +2,6 @@ package me.dekimpe;
 
 import me.dekimpe.types.PageLink;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
@@ -44,12 +43,13 @@ public class App
         
         lines.take(100).forEach(s -> System.out.println(s));
         
+        
         /*Schema pageLinks = SchemaBuilder.record("PageLinks")
                 .namespace("me.dekimpe.avro")
                 .fields().requiredInt("pl_id").requiredString("pl_title")
                 .endRecord();
         
-        Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
+        Dataset<Row> df = spark.createDataFrame(lines, pageLinks);
         df.limit(100).show();
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
@@ -80,6 +80,7 @@ public class App
         for (int u = 0; u < totalCount; u = u+2) {
             pageLink = new PageLink();
             if (u%4 == 0) {
+                System.out.println(comp[u].substring(1));
                 pageLink.setId(Integer.parseInt(comp[u].substring(1)));
             } else if (u%4 == 2) {
                 pageLink.setTitle(comp[u].substring(1, comp[u].length() - 1));
