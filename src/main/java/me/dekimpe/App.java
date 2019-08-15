@@ -63,7 +63,7 @@ public class App
         try {
             pageLink.setId(Integer.parseInt(comp[0].substring(1)));
         } catch (NumberFormatException e) {
-            System.err.println(e);
+            System.err.println("Exception : String = '" + s);
         }
         if (comp[2].length() >= 2)
             pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
