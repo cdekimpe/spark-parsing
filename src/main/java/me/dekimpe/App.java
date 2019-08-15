@@ -44,13 +44,9 @@ public class App
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
                 .flatMap(s -> Arrays.asList(s.split("\\),")).iterator())
                 .map(s -> getValues(s));
-       
-        /*Schema pageLinks = SchemaBuilder.record("PageLinks")
-                .namespace("me.dekimpe.avro")
-                .fields().requiredInt("pl_id").requiredString("pl_title")
-                .endRecord();*/
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
+        //df.write().format("com.databricks.spark.avro").save("hdfs://hdfs-namenode:9000/schemas/pagelinks.avsc");
         System.out.println(df.count());
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
@@ -75,14 +71,15 @@ public class App
         
         PageLink pageLink = new PageLink();
         pageLink.setId(0);
-        pageLink.setTitle("false");
-        if(!s.contains(",") || s == null)
+        pageLink.setTitle("faaaakeOne");
+        if(!s.contains(","))
             return pageLink;
         String[] comp = s.split(",");
         if (comp.length < 4)
             return pageLink;
         pageLink.setId(Integer.parseInt(comp[0].substring(1)));
-        pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
+        if (comp[2].length() >= 2)
+            pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
         return pageLink;
 
     }
