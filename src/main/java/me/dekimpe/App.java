@@ -73,12 +73,14 @@ public class App
         // (936086,0,'\'Midst_Woodland_Shadows',0)
         // (11899918,0,'(1)_Cérès',0)
         
+        PageLink pageLink = new PageLink();
+        pageLink.setId(0);
+        pageLink.setTitle("false");
         if(!s.contains(",") || s == null)
-            return null;
+            return pageLink;
         String[] comp = s.split(",");
         if (comp.length < 4)
-            return null;
-        PageLink pageLink = new PageLink();
+            return pageLink;
         pageLink.setId(Integer.parseInt(comp[0].substring(1)));
         pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
         return pageLink;
