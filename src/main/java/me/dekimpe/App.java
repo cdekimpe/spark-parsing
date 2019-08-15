@@ -8,11 +8,8 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.avro.AvroFileFormat;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
 
@@ -42,7 +39,7 @@ public class App
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
         //lines.take(100).forEach(s -> System.out.println(s));
-        df.write().format("avro").save("hdfs://hdfs-namenode:9000/schemas/test-sql.avsc");
+        df.write().format("org.apache.spark.sql.avro.AvroFileFormat").save("hdfs://hdfs-namenode:9000/schemas/test-sql.avsc");
         System.out.println("Total : " + df.count());
         System.out.println("Fakes : " + df.filter("title = 'faaaakeOne'").count());
         
