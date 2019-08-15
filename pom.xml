@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>me.dekimpe</groupId>
-  <artifactId>spark-parsing</artifactId>
+  <artifactId>spark-parsing-sql</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>spark-parsing</name>
+  <name>spark-parsing-sql</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
