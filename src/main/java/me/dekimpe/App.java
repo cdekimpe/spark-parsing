@@ -8,6 +8,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 
 public class App 
 {
@@ -19,13 +20,13 @@ public class App
         
         SparkConf conf = new SparkConf()
                 .set("spark.executor.extraClassPath", "/home/hadoop/*:")
-                .setAppName("Spark Parsing - Context")
+                .setAppName("Spark Parsing SQL - Context")
                 .setMaster("spark://192.168.10.14:7077");
         JavaSparkContext sc = new JavaSparkContext(conf);
         
         SparkSession spark = SparkSession
                 .builder()
-                .appName("Spark Parsing - Session")
+                .appName("Spark Parsing SQL - Session")
                 .master("spark://192.168.10.14:7077")
                 //.config("spark.some.config.option", "some-value")
                 .getOrCreate();
@@ -37,18 +38,18 @@ public class App
                 .map(s -> getValues(s));
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
-        //lines.take(100).forEach(s -> System.out.println(s));
-        df.write().format("avro").save("hdfs://hdfs-namenode:9000/schemas/" + args[1]);
-        System.out.println("Total : " + df.count());
-        System.out.println("Fakes : " + df.filter("title = 'faaaakeOne'").count());
+        df.write().mode(SaveMode.Overwrite).format("avro").save("hdfs://hdfs-namenode:9000/schemas/" + args[1]);
+        
+        //System.out.println("Total : " + df.count());
+        //System.out.println("Fakes : " + df.filter("title = 'faaaakeOne'").count());
         
     }
     
     private static PageLink getValues(String s) {
 
         PageLink pageLink = new PageLink();
-        pageLink.setId(0);
-        pageLink.setTitle("faaaakeOne");
+        pageLink.setId(-1);
+        pageLink.setTitle("");
         if(!s.contains(","))
             return pageLink;
         String[] comp = s.split(",");
