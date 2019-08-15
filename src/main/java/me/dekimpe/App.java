@@ -45,11 +45,7 @@ public class App
     }
     
     private static PageLink getValues(String s) {
-        
-        // Exceptions :
-        // (936086,0,'\'Midst_Woodland_Shadows',0)
-        // (11899918,0,'(1)_Cérès',0)
-        
+
         PageLink pageLink = new PageLink();
         pageLink.setId(0);
         pageLink.setTitle("faaaakeOne");
