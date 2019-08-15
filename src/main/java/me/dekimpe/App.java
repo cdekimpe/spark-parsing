@@ -42,7 +42,7 @@ public class App
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
         //lines.take(100).forEach(s -> System.out.println(s));
-        df.write().format("avro").save("hdfs://hdfs-namenode:9000/schemas/" + args[0].split(".")[0] + ".avsc");
+        df.write().format("avro").save("hdfs://hdfs-namenode:9000/schemas/test-sql.avsc");
         System.out.println("Total : " + df.count());
         System.out.println("Fakes : " + df.filter("title = 'faaaakeOne'").count());
         
