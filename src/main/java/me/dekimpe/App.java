@@ -41,10 +41,10 @@ public class App
                 .map(s -> getValues(s));
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
-        lines.take(100).forEach(s -> System.out.println(s));
+        //lines.take(100).forEach(s -> System.out.println(s));
         //df.write().format("com.databricks.spark.avro").save("hdfs://hdfs-namenode:9000/schemas/pagelinks.avsc");
         System.out.println(df.count());
-        //df.filter("")
+        df.filter("pl_title = faaakeOne").show();
         
     }
     
