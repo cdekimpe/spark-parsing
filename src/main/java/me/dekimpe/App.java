@@ -8,7 +8,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.avro.AvroFileFormat;
 
 public class App 
 {
@@ -31,7 +30,7 @@ public class App
                 //.config("spark.some.config.option", "some-value")
                 .getOrCreate();
 
-        JavaRDD<PageLink> lines = sc.textFile(args[0])
+        JavaRDD<PageLink> lines = sc.textFile("hdfs://hdfs-namenode:9000/input/" + args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
                 .flatMap(s -> Arrays.asList(s.split("\\),\\(")).iterator())
@@ -39,7 +38,7 @@ public class App
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
         //lines.take(100).forEach(s -> System.out.println(s));
-        df.write().format("org.apache.spark.sql.avro.AvroFileFormat").save("hdfs://hdfs-namenode:9000/schemas/test-sql.avsc");
+        df.write().format("avro").save("hdfs://hdfs-namenode:9000/schemas/" + args[1]);
         System.out.println("Total : " + df.count());
         System.out.println("Fakes : " + df.filter("title = 'faaaakeOne'").count());
         
