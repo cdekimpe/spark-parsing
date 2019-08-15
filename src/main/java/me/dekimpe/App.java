@@ -43,8 +43,8 @@ public class App
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
         //lines.take(100).forEach(s -> System.out.println(s));
         //df.write().format("com.databricks.spark.avro").save("hdfs://hdfs-namenode:9000/schemas/pagelinks.avsc");
-        System.out.println(df.count());
-        df.filter("title = 'faaaakeOne'").show();
+        System.out.println("Total : " + df.count());
+        System.out.println("Fakes : " + df.filter("title = 'faaaakeOne'").count());
         
     }
     
