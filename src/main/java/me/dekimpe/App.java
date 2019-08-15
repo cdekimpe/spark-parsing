@@ -73,6 +73,8 @@ public class App
         // (936086,0,'\'Midst_Woodland_Shadows',0)
         // (11899918,0,'(1)_Cérès',0)
         
+        if(!s.contains(","))
+            return null;
         String[] comp = s.split(",");
         if (comp.length < 4)
             return null;
