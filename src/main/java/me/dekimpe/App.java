@@ -51,7 +51,7 @@ public class App
                 .endRecord();*/
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
-        df.limit(100).show();
+        System.out.println(df.count());
         
         //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
         // Apply a schema to an RDD
