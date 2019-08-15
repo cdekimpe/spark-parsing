@@ -1,19 +1,13 @@
 package me.dekimpe;
 
 import me.dekimpe.types.PageLink;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-import org.apache.avro.Schema;
-import org.apache.avro.SchemaBuilder;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import static org.apache.spark.sql.catalyst.expressions.LambdaFunction.identity;
 
 /**
  * Hello world!
@@ -26,6 +20,7 @@ public class App
 
     public static void main(String[] args)
     {
+        
         SparkConf conf = new SparkConf()
                 .set("spark.executor.extraClassPath", "/home/hadoop/*:")
                 .setAppName("Spark Parsing - Context")
@@ -49,18 +44,6 @@ public class App
         //df.write().format("com.databricks.spark.avro").save("hdfs://hdfs-namenode:9000/schemas/pagelinks.avsc");
         System.out.println(df.count());
         
-        //DataFrame test = sqlContext.createDataFram(getValues(lines.collect()), Values.class);
-        // Apply a schema to an RDD
-        /*DataFrame test;
-        DataFrame peopleDF = sqlContext.createDataFrame(people, Person.class);
-        peopleDF.write()
-                .format("com.databricks.spark.avro")
-                .save("/output");*/
-                       
-        
-        
-        //JavaRDD<HashMap> values = lines.map(s -> getValues(s));
-        //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
     }
     
     private static PageLink getValues(String s) {
@@ -77,7 +60,11 @@ public class App
         String[] comp = s.split(",");
         if (comp.length < 4)
             return pageLink;
-        pageLink.setId(Integer.parseInt(comp[0].substring(1)));
+        try {
+            pageLink.setId(Integer.parseInt(comp[0].substring(1)));
+        } catch (NumberFormatException e) {
+            System.err.println(e);
+        }
         if (comp[2].length() >= 2)
             pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
         return pageLink;
