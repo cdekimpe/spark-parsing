@@ -44,7 +44,7 @@ public class App
         //lines.take(100).forEach(s -> System.out.println(s));
         //df.write().format("com.databricks.spark.avro").save("hdfs://hdfs-namenode:9000/schemas/pagelinks.avsc");
         System.out.println(df.count());
-        df.filter("pl_title = faaaakeOne").show();
+        df.filter("title = 'faaaakeOne'").show();
         
     }
     
