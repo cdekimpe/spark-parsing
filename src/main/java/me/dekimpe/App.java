@@ -39,15 +39,11 @@ public class App
                 //.config("spark.some.config.option", "some-value")
                 .getOrCreate();
 
-        JavaRDD<List<PageLink>> lines = sc.textFile(args[0])
+        JavaRDD<PageLink> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
+                .flatMap(s -> Arrays.asList(s.split("\\),\\(")).iterator())
                 .map(s -> getValues(s));
-        
-        JavaRDD<PageLink> pageLinks = lines.flatMap(s -> s.toArray(PageLink.class));
-        
-        lines.take(100).forEach(s -> System.out.println(s));
-         
        
         /*Schema pageLinks = SchemaBuilder.record("PageLinks")
                 .namespace("me.dekimpe.avro")
@@ -71,31 +67,18 @@ public class App
         //JavaPairRDD values = JavaPairRDD.fromJavaRDD(lines.map(s -> getValues(s)));*/
     }
     
-    private static List<PageLink> getValues(String s) {
+    private static PageLink getValues(String s) {
         
         // Exceptions :
         // (936086,0,'\'Midst_Woodland_Shadows',0)
         // (11899918,0,'(1)_Cérès',0)
         
-        int i = 0;
         String[] comp = s.split(",");
-        int totalCount = comp.length;
-        List<PageLink> result = new ArrayList<>();
-        PageLink pageLink;
-        pageLink = new PageLink();
-        for (int u = 0; u < totalCount; u = u+2) {
-            if (u%4 == 0) {
-                pageLink.setId(Integer.parseInt(comp[u].substring(1)));
-            } else if (u%4 == 2) {
-                pageLink.setTitle(comp[u].substring(1, comp[u].length() - 1));
-                result.add(pageLink);
-                pageLink = new PageLink();
-            }
-            if (u >= 100)
-                break;
-        }
+        PageLink pageLink = new PageLink();
+        pageLink.setId(Integer.parseInt(comp[0].substring(1)));
+        pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
+        return pageLink;
 
-        return result;
     }
     
 }
