@@ -37,12 +37,14 @@ public class App
         JavaRDD<PageLink> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
-                .flatMap(s -> Arrays.asList(s.split("\\),")).iterator())
+                .flatMap(s -> Arrays.asList(s.split("\\),\\(")).iterator())
                 .map(s -> getValues(s));
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
+        df.take(100).show();
         //df.write().format("com.databricks.spark.avro").save("hdfs://hdfs-namenode:9000/schemas/pagelinks.avsc");
         System.out.println(df.count());
+        //df.filter("")
         
     }
     
@@ -63,10 +65,17 @@ public class App
         try {
             pageLink.setId(Integer.parseInt(comp[0].substring(1)));
         } catch (NumberFormatException e) {
-            System.err.println("Exception : String = '" + s);
+            System.err.println("Error parsing id : String = '" + s);
+            try {
+                pageLink.setId(Integer.parseInt(comp[0]));
+            } catch (NumberFormatException e2) {
+                System.err.println("Error parsing id : String = '" + s);
+            }
         }
         if (comp[2].length() >= 2)
             pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
+        else
+            System.err.println("Error parsing title : String = '" + s);
         return pageLink;
 
     }
