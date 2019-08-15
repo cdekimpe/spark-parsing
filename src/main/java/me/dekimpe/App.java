@@ -65,7 +65,6 @@ public class App
         try {
             pageLink.setId(Integer.parseInt(comp[0].substring(1)));
         } catch (NumberFormatException e) {
-            System.err.println("Error parsing id : String = '" + s);
             try {
                 pageLink.setId(Integer.parseInt(comp[0]));
             } catch (NumberFormatException e2) {
