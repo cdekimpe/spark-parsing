@@ -42,7 +42,7 @@ public class App
         JavaRDD<PageLink> lines = sc.textFile(args[0])
                 .filter(s -> s.startsWith("INSERT INTO")) // Only INSERT INTO lines
                 .map(s -> s.substring(31)) // Substract 'INSERT INTO `pagelinks` VALUES ' from the line
-                .flatMap(s -> Arrays.asList(s.split("\\),\\(")).iterator())
+                .flatMap(s -> Arrays.asList(s.split("\\),")).iterator())
                 .map(s -> getValues(s));
        
         /*Schema pageLinks = SchemaBuilder.record("PageLinks")
@@ -79,7 +79,7 @@ public class App
         if (comp.length < 4)
             return null;
         PageLink pageLink = new PageLink();
-        pageLink.setId(Integer.parseInt(comp[0]));
+        pageLink.setId(Integer.parseInt(comp[0].substring(1)));
         pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
         return pageLink;
 
