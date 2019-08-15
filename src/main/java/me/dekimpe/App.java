@@ -79,7 +79,7 @@ public class App
         if (comp.length < 4)
             return null;
         PageLink pageLink = new PageLink();
-        pageLink.setId(Integer.parseInt(comp[0].substring(1)));
+        pageLink.setId(Integer.parseInt(comp[0]));
         pageLink.setTitle(comp[2].substring(1, comp[2].length() - 1));
         return pageLink;
 
