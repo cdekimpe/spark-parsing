@@ -37,9 +37,6 @@ public class App
         
         Dataset<Row> df = spark.createDataFrame(lines, PageLink.class);
         df.write().mode(SaveMode.Overwrite).format("avro").save("hdfs://hdfs-namenode:9000/schemas/" + args[1]);
-        
-        //System.out.println("Total : " + df.count());
-        //System.out.println("Fakes : " + df.filter("title = 'faaaakeOne'").count());
     }
     
     private static PageLink getValues(String s) {
